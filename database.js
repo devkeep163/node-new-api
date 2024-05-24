@@ -46,7 +46,10 @@ function addRecord(table, data, callback) {
     const values = Object.values(data);
     const placeholders = keys.map(() => '?').join(', ');  // 为每个值创建一个占位符
 
-    const query = `INSERT INTO ${table} (${keys.join(', ')}) VALUES (${placeholders})`;
+    // 用反引号包裹表名和列名
+    const escapedKeys = keys.map(key => `\`${key}\``).join(', ');
+    const query = `INSERT INTO \`${table}\` (${escapedKeys}) VALUES (${placeholders})`;
+
     pool.query(query, values, (error, results) => {
         if (error) {
             console.error('Error executing query:', error);
@@ -63,15 +66,15 @@ function updateRecord(table, conditions, data, callback) {
     const conditionEntries = Object.entries(conditions);
 
     // Generate the SET part of the query
-    const updates = dataEntries.map(([key, val]) => `${key} = ?`).join(', ');
+    const updates = dataEntries.map(([key, val]) => `\`${key}\` = ?`).join(', ');
 
     // Generate the WHERE part of the query
-    const whereClause = conditionEntries.map(([key, val]) => `${key} = ?`).join(' AND ');
+    const whereClause = conditionEntries.map(([key, val]) => `\`${key}\` = ?`).join(' AND ');
 
     // Combine values for SET and WHERE parts
     const values = [...dataEntries.map(entry => entry[1]), ...conditionEntries.map(entry => entry[1])];
 
-    const query = `UPDATE ${table} SET ${updates} WHERE ${whereClause}`;
+    const query = `UPDATE \`${table}\` SET ${updates} WHERE ${whereClause}`;
 
     pool.query(query, values, (error, results) => {
         if (error) {

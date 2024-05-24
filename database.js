@@ -75,14 +75,10 @@ function updateRecord(table, conditions, data, callback) {
 
     pool.query(query, values, (error, results) => {
         if (error) {
-            return callback(error);
+            return callback(error, null);
         }
 
-        if (results) {
-            callback(null, results.affectedRows);
-        } else {
-            callback(new Error('No results returned from database.'));
-        }
+        callback(null, results);
     });
 }
 

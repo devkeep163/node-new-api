@@ -25,20 +25,26 @@ function getAll(table, conditions, callback) {
     if(keys.length === 0)
     {
         const query = `SELECT * FROM \`${table}\``;
+        pool.query(query, Object.values(conditions), (error, results) => {
+            if (error) {
+                callback(error, null);
+                return;
+            }
+            callback(null, results);
+        });
     }
     else
     {
         const whereClause = keys.map(key => `\`${key}\` = ?`).join(' AND ');
         const query = `SELECT * FROM \`${table}\` WHERE ${whereClause}`;
+        pool.query(query, Object.values(conditions), (error, results) => {
+            if (error) {
+                callback(error, null);
+                return;
+            }
+            callback(null, results);
+        });
     }
-
-    pool.query(query, Object.values(conditions), (error, results) => {
-        if (error) {
-            callback(error, null);
-            return;
-        }
-        callback(null, results);
-    });
 }
 
 // 通过条件获取记录

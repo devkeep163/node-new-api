@@ -54,6 +54,86 @@ app.post('/update-key', (req, res) => {
     }
 });
 
+// 获取日志
+app.get('/logs', async (req, res) => {
+    try {
+
+        db.getAll('logs', {}, async (err, result) => {
+            if (err) {
+                res.status(400).json(err);
+            }
+            if (result) {
+                res.status(200).json(result);
+            } 
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ detail: error.message });
+    }
+});
+
+// 获取其他表的所有记录
+app.post('/all', async (req, res) => {
+    try {
+
+        const { table } = req.body;
+
+        if (!table) {
+            res.status(400).json({ detail: 'table is required' });
+            return;
+        }
+
+        db.getAll(table, {}, async (err, result) => {
+            if (err) {
+                res.status(400).json(err);
+            }
+            if (result) {
+                res.status(200).json(result);
+            } 
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ detail: error.message });
+    }
+});
+
+
+// 更新其他表的记录
+app.post('/update', async (req, res) => {
+    try {
+
+        const { table, conditions, data } = req.body;
+
+        if (!table) {
+            res.status(400).json({ detail: 'table is required' });
+            return;
+        }
+
+        if (!conditions) {
+            res.status(400).json({ detail: 'conditions is required' });
+            return;
+        }
+
+        if (!data) {
+            res.status(400).json({ detail: 'data is required' });
+            return;
+        }
+
+        db.updateRecord(table, conditions, data, async (err, result) => {
+            if (err) {
+                res.status(400).json(err);
+            }
+            if (result) {
+                res.status(200).json(result);
+            } 
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(400).json({ detail: error.message });
+    }
+});
+
+
 // 启动服务器
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

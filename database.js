@@ -16,21 +16,35 @@ const pool = mysql.createPool({
 
 
 // 获取所有记录
-function getAll(table, callback) {
-    pool.query(`SELECT * FROM ${table}`, (error, results) => {
-        callback(error, results);
+function getAll(table, conditions, callback) {
+    const keys = Object.keys(conditions);
+    const values = Object.values(conditions);
+
+    // 构建 WHERE 子句，并用反引号包裹列名
+    const whereClause = keys.map(key => `\`${key}\` = ?`).join(' AND ');
+
+    // 用反引号包裹表名
+    const query = `SELECT * FROM \`${table}\` WHERE ${whereClause}`;
+    pool.query(query, values, (error, results) => {
+        if (error) {
+            callback(error, null);
+            return;
+        }
+        callback(null, results);
     });
 }
+
 
 // 通过条件获取记录
 function getRecord(table, conditions, callback) {
     const keys = Object.keys(conditions);
     const values = Object.values(conditions);
 
-    // 构建WHERE子句
-    const whereClause = keys.map(key => `${key} = ?`).join(' AND ');
+    // 构建 WHERE 子句，并用反引号包裹列名
+    const whereClause = keys.map(key => `\`${key}\` = ?`).join(' AND ');
 
-    const query = `SELECT * FROM ${table} WHERE ${whereClause}`;
+    // 用反引号包裹表名
+    const query = `SELECT * FROM \`${table}\` WHERE ${whereClause}`;
     pool.query(query, values, (error, results) => {
         if (error) {
             callback(error, null);
@@ -65,13 +79,8 @@ function updateRecord(table, conditions, data, callback) {
     const dataEntries = Object.entries(data);
     const conditionEntries = Object.entries(conditions);
 
-    // Generate the SET part of the query
     const updates = dataEntries.map(([key, val]) => `\`${key}\` = ?`).join(', ');
-
-    // Generate the WHERE part of the query
     const whereClause = conditionEntries.map(([key, val]) => `\`${key}\` = ?`).join(' AND ');
-
-    // Combine values for SET and WHERE parts
     const values = [...dataEntries.map(entry => entry[1]), ...conditionEntries.map(entry => entry[1])];
 
     const query = `UPDATE \`${table}\` SET ${updates} WHERE ${whereClause}`;
@@ -86,8 +95,17 @@ function updateRecord(table, conditions, data, callback) {
 }
 
 // 删除记录
-function deleteRecord(table, id, callback) {
-    pool.query(`DELETE FROM ${table} WHERE conversation_id = ?`, [id], (error, results) => {
+function deleteRecord(table, conditions, callback) {
+    const keys = Object.keys(conditions);
+    const values = Object.values(conditions);
+
+    // 构建 WHERE 子句，并用反引号包裹列名
+    const whereClause = keys.map(key => `\`${key}\` = ?`).join(' AND ');
+
+    // 用反引号包裹表名
+    const query = `DELETE FROM \`${table}\` WHERE ${whereClause}`;
+
+    pool.query(query, values, (error, results) => {
         if (error) {
             return callback(error, null);
         }
@@ -95,6 +113,7 @@ function deleteRecord(table, id, callback) {
         callback(null, results);
     });
 }
+
 
 module.exports = {
     getAll,

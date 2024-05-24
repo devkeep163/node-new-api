@@ -1,6 +1,5 @@
 const express = require('express');
 const axios = require('axios');
-const { appendToFile } = require('./fileWriter');
 const path = require('path');
 const db = require('./database');
 

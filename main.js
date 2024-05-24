@@ -41,6 +41,8 @@ app.post('/update-key', async (req, res) => {
         // 获取请求参数
         const { key } = req.body;
 
+        console.log(req.body);
+
         // 校验参数
         if (!key) {
             res.status(400).json({ detail: 'Key is required' });

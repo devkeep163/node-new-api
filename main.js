@@ -1,20 +1,10 @@
-const express = require('express');
 const db = require('./database');
-
+const express = require('express');
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-function isValidJson(str) {
-    try {
-        JSON.parse(str);
-        return true;
-    } catch (e) {
-        return false;
-    }
-}
 
 // 获取令牌
 app.get('/key', async (req, res) => {
@@ -35,7 +25,7 @@ app.get('/key', async (req, res) => {
 });
 
 // 更新令牌
-app.post('/update-key', async (req, res) => {
+app.post('/update-key', (req, res) => {
     try {
 
         // 获取请求参数

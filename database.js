@@ -74,7 +74,15 @@ function updateRecord(table, conditions, data, callback) {
     const query = `UPDATE ${table} SET ${updates} WHERE ${whereClause}`;
 
     pool.query(query, values, (error, results) => {
-        callback(error, results.affectedRows);
+        if (error) {
+            return callback(error);
+        }
+
+        if (results) {
+            callback(null, results.affectedRows);
+        } else {
+            callback(new Error('No results returned from database.'));
+        }
     });
 }
 

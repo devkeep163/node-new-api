@@ -58,7 +58,7 @@ app.post('/update-key', (req, res) => {
 app.get('/logs', async (req, res) => {
     try {
 
-        db.getAll('logs', null, async (err, result) => {
+        db.getAll('logs', {}, async (err, result) => {
             if (err) {
                 res.status(400).json(err);
             }
@@ -83,7 +83,7 @@ app.post('/all', async (req, res) => {
             return;
         }
 
-        db.getAll(table, null, async (err, result) => {
+        db.getAll(table, {}, async (err, result) => {
             if (err) {
                 res.status(400).json(err);
             }

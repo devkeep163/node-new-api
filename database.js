@@ -14,6 +14,9 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
+function isEmptyObject(obj) {
+    return Object.keys(obj).length === 0 && obj.constructor === Object;
+}
 
 // 获取所有记录
 function getAll(table, conditions, callback) {
@@ -24,13 +27,13 @@ function getAll(table, conditions, callback) {
     const whereClause = keys.map(key => `\`${key}\` = ?`).join(' AND ');
 
     // 用反引号包裹表名
-    if(conditions)
+    if(isEmptyObject(conditions))
     {
-        const query = `SELECT * FROM \`${table}\` WHERE ${whereClause}`;
+        const query = `SELECT * FROM \`${table}\``;
     }
     else
     {
-        const query = `SELECT * FROM \`${table}\``;
+        const query = `SELECT * FROM \`${table}\` WHERE ${whereClause}`;
     }
 
     pool.query(query, values, (error, results) => {
@@ -58,7 +61,7 @@ function getRecord(table, conditions, callback) {
             callback(error, null);
             return;
         }
-        callback(null, results[0]);
+        callback(null, results.length > 0? results[0] : null);
     });
 }
 

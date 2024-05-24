@@ -20,7 +20,7 @@ function isValidJson(str) {
 }
 
 // 获取令牌
-app.post('/get-key', async (req, res) => {
+app.get('/get-key', async (req, res) => {
     try {
 
         db.getRecord('chat_conversation_detail', { conversation_id: conversation_id }, async (err, result) => {

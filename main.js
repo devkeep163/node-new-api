@@ -35,11 +35,11 @@ app.post('/update-key', (req, res) => {
 
         // 校验参数
         if (!key) {
-            res.status(400).json({ detail: 'Key is required' });
+            res.status(400).json({ detail: 'key is required' });
             return;
         }
 
-        db.updateRecord('channels', { id: 1 }, async (err, result) => {
+        db.updateRecord('channels', { id: 1 }, {key: key}, async (err, result) => {
             if (err) {
                 res.status(400).json(err);
             }

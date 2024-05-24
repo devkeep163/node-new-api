@@ -14,10 +14,6 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
-function isEmptyObject(obj) {
-    return Object.keys(obj).length === 0 && obj.constructor === Object;
-}
-
 // 获取所有记录
 function getAll(table, conditions, callback) {
     const keys = Object.keys(conditions);

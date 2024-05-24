@@ -22,7 +22,7 @@ function getAll(table, callback) {
     });
 }
 
-// 通过ID获取记录
+// 通过条件获取记录
 function getRecord(table, conditions, callback) {
     const keys = Object.keys(conditions);
     const values = Object.values(conditions);
@@ -58,11 +58,22 @@ function addRecord(table, data, callback) {
 }
 
 // 更新记录
-function updateRecord(table, id, data, callback) {
-    const entries = Object.entries(data);
-    const updates = entries.map(([key, val]) => `${key} = ?`).join(', ');
-    const values = [...entries.map(entry => entry[1]), id];
-    pool.query(`UPDATE ${table} SET ${updates} WHERE id = ?`, values, (error, results) => {
+function updateRecord(table, conditions, data, callback) {
+    const dataEntries = Object.entries(data);
+    const conditionEntries = Object.entries(conditions);
+
+    // Generate the SET part of the query
+    const updates = dataEntries.map(([key, val]) => `${key} = ?`).join(', ');
+
+    // Generate the WHERE part of the query
+    const whereClause = conditionEntries.map(([key, val]) => `${key} = ?`).join(' AND ');
+
+    // Combine values for SET and WHERE parts
+    const values = [...dataEntries.map(entry => entry[1]), ...conditionEntries.map(entry => entry[1])];
+
+    const query = `UPDATE ${table} SET ${updates} WHERE ${whereClause}`;
+
+    pool.query(query, values, (error, results) => {
         callback(error, results.affectedRows);
     });
 }

@@ -1,11 +1,8 @@
 const express = require('express');
-const axios = require('axios');
-const path = require('path');
 const db = require('./database');
 
 const app = express();
 const PORT = 3000;
-const UPSTREAM_URL = 'http://127.0.0.1:8300';
 
 app.use(express.json());
 app.use(express.text());
@@ -20,12 +17,12 @@ function isValidJson(str) {
 }
 
 // 获取令牌
-app.get('/get-key', async (req, res) => {
+app.get('/key', async (req, res) => {
     try {
 
-        db.getRecord('chat_conversation_detail', { conversation_id: conversation_id }, async (err, result) => {
+        db.getRecord('channels', { id: 1 }, async (err, result) => {
             if (err) {
-                console.log(err);
+                res.status(400).json(err);
             }
             if (result) {
                 res.status(200).json(result);
@@ -37,21 +34,27 @@ app.get('/get-key', async (req, res) => {
     }
 });
 
-
-
-// 修改标题接口
-app.post('/backend-api/conversation/gen_title/:id', async (req, res) => {
+// 更新令牌
+app.post('/update-key', async (req, res) => {
     try {
-        const response = await axios({
-            method: req.method,
-            url: UPSTREAM_URL + req.url,
-            headers: req.headers,
-            data: req.body,
-            responseType: 'stream'
+
+        // 获取请求参数
+        const { key } = req.body;
+
+        // 校验参数
+        if (!key) {
+            res.status(400).json({ detail: 'Key is required' });
+            return;
+        }
+
+        db.updateRecord('channels', { id: 1 }, async (err, result) => {
+            if (err) {
+                res.status(400).json(err);
+            }
+            if (result) {
+                res.status(200).json(result);
+            } 
         });
-        res.status(response.status);
-        res.set(response.headers);
-        response.data.pipe(res);
     } 
     catch (error) 
     {

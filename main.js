@@ -83,7 +83,7 @@ app.post('/all', async (req, res) => {
             return;
         }
 
-        db.getAll(table, {}, async (err, result) => {
+        db.getAll(table, {1: 1}, async (err, result) => {
             if (err) {
                 res.status(400).json(err);
             }

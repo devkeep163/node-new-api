@@ -6,6 +6,10 @@ const PORT = 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+function isJSONObject(input) {
+    return typeof input === 'object' && input !== null && !Array.isArray(input);
+}
+
 // 获取令牌
 app.get('/key', async (req, res) => {
     try {
@@ -119,7 +123,15 @@ app.post('/update', async (req, res) => {
             return;
         }
 
-        db.updateRecord(table, conditions, data, async (err, result) => {
+        if(isJSONObject(data)) {
+            res.status(400).json({ detail: 'data must be a JSON object' });
+            return;
+        }
+
+        let conditionsWhere = isJSONObject(conditions) ? conditions : JSON.parse(conditions);
+        let dataToUpdate = isJSONObject(data)? data : JSON.parse(data);
+
+        db.updateRecord(table, conditionsWhere, dataToUpdate, async (err, result) => {
             if (err) {
                 res.status(400).json(err);
             }

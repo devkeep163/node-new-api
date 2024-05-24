@@ -24,7 +24,15 @@ function getAll(table, conditions, callback) {
     const whereClause = keys.map(key => `\`${key}\` = ?`).join(' AND ');
 
     // 用反引号包裹表名
-    const query = `SELECT * FROM \`${table}\` WHERE ${whereClause}`;
+    if(conditions)
+    {
+        const query = `SELECT * FROM \`${table}\` WHERE ${whereClause}`;
+    }
+    else
+    {
+        const query = `SELECT * FROM \`${table}\``;
+    }
+
     pool.query(query, values, (error, results) => {
         if (error) {
             callback(error, null);

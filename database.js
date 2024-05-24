@@ -21,22 +21,18 @@ function isEmptyObject(obj) {
 // 获取所有记录
 function getAll(table, conditions, callback) {
     const keys = Object.keys(conditions);
-    const values = Object.values(conditions);
 
-    // 构建 WHERE 子句，并用反引号包裹列名
-    const whereClause = keys.map(key => `\`${key}\` = ?`).join(' AND ');
-
-    // 用反引号包裹表名
-    if(isEmptyObject(conditions))
+    if(keys.length === 0)
     {
         const query = `SELECT * FROM \`${table}\``;
     }
     else
     {
+        const whereClause = keys.map(key => `\`${key}\` = ?`).join(' AND ');
         const query = `SELECT * FROM \`${table}\` WHERE ${whereClause}`;
     }
 
-    pool.query(query, values, (error, results) => {
+    pool.query(query, Object.values(conditions), (error, results) => {
         if (error) {
             callback(error, null);
             return;
@@ -44,7 +40,6 @@ function getAll(table, conditions, callback) {
         callback(null, results);
     });
 }
-
 
 // 通过条件获取记录
 function getRecord(table, conditions, callback) {

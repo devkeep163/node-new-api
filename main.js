@@ -14,6 +14,7 @@ function isJSONObject(input) {
 app.get('/key', async (req, res) => {
     try {
 
+        // 查询令牌
         db.getRecord('channels', { id: 1 }, async (err, result) => {
             if (err) {
                 res.status(400).json(err);
@@ -43,6 +44,7 @@ app.post('/update-key', (req, res) => {
             return;
         }
 
+        // 更新令牌
         db.updateRecord('channels', { id: 1 }, {key: key}, async (err, result) => {
             if (err) {
                 res.status(400).json(err);
@@ -62,6 +64,7 @@ app.post('/update-key', (req, res) => {
 app.get('/logs', async (req, res) => {
     try {
 
+        // 查询所有日志
         db.getAll('logs', {}, async (err, result) => {
             if (err) {
                 res.status(400).json(err);
@@ -80,13 +83,16 @@ app.get('/logs', async (req, res) => {
 app.post('/all', async (req, res) => {
     try {
 
+        // 获取请求参数
         const { table } = req.body;
 
+        // 校验参数
         if (!table) {
             res.status(400).json({ detail: 'table is required' });
             return;
         }
 
+        // 获取所有记录
         db.getAll(table, {}, async (err, result) => {
             if (err) {
                 res.status(400).json(err);
@@ -106,8 +112,10 @@ app.post('/all', async (req, res) => {
 app.post('/update', async (req, res) => {
     try {
 
+        // 获取请求参数
         const { table, conditions, data } = req.body;
 
+        // 校验参数
         if (!table) {
             res.status(400).json({ detail: 'table is required' });
             return;
@@ -128,9 +136,11 @@ app.post('/update', async (req, res) => {
             return;
         }
 
+        // 判断条件是否是JSON对象，如果不是，则尝试转换为JSON对象
         let conditionsWhere = isJSONObject(conditions) ? conditions : JSON.parse(conditions);
         let dataToUpdate = isJSONObject(data)? data : JSON.parse(data);
 
+        // 更新记录
         db.updateRecord(table, conditionsWhere, dataToUpdate, async (err, result) => {
             if (err) {
                 res.status(400).json(err);
